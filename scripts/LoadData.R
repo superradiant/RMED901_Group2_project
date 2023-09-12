@@ -1,0 +1,5 @@
+library(tidyverse)
+library(here)
+here()
+data1 <- read_delim(here("data_original", "exam_data.txt"))
+data2 <- read_delim(here("data_original", "exam_data_join.txt"))
