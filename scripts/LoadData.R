@@ -20,9 +20,9 @@ merged_data2 <- merged_data %>%
          treatment = treat
          ) # renames column head
 merged_data2 <- merged_data2 %>%
-  mutate(gender = case_when(gender == "0" ~ "M",
-                            gender == "1" ~ "F",
-                            TRUE ~"Other")) %>%
+  mutate(gender = case_when(gender == "0" ~ "Male",
+                            gender == "1" ~ "Female",
+                            TRUE ~"Other")) %>% #gender to "Male" and "Female" instead of "0"/"1"
   mutate(smoking = case_when(smoking == 1 ~ "Current",
                              smoking == 2 ~ "Past",
                              smoking == 3 ~ "Never")) %>%
@@ -31,7 +31,13 @@ merged_data2 <- merged_data2 %>%
   mutate(treatment = case_when(treatment == 0 ~ "No",
                                treatment == 1 ~ "Yes")) %>%
   mutate(asa = as.numeric(asa),
-         mallampati = as.numeric(mallampati))#converts characters into numeric, very useful
+         mallampati = as.numeric(mallampati)) %>% #converts characters into numeric, very useful
+  mutate(bmi_4groups= cut(bmi, 4, labels = c("1st quartile", "2nd quartile", "3rd quartile", "4th quartile"))) %>%## a column cutting BMI into quartiles (4 equal parts); HINT: cut() function
+  select(patient_id, bmi, age, smoking, gender, everything()) %>% 
+  arrange(patient_id) #- Arrange patient_id column of your dataset in order of increasing number or #alphabetically
+
 write_csv(merged_data2, here("data_processed", "data_merged.csv")) #write output so others scripts can use it
+  
+
 #summary(merged_data2)
 #skimr::skim(merged_data2)
