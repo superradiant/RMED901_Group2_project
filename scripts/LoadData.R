@@ -12,6 +12,14 @@ merged_data2 <- merged_data %>%
            sep = "_") %>% # splits column into two
   rename(gender = '1gender',
          bmi = `BMI kg/m2`) # renames column head
-summary(merged_data2)
-library(skimr)
-skim(merged_data2)
+merged_data2 <- merged_data2 %>%
+  mutate(gender = case_when(gender == "0" ~ "M",
+                            gender == "1" ~ "F",
+                            TRUE ~"Other")) %>%
+  mutate(ASA = as.numeric(ASA),
+         Mallampati = as.numeric(Mallampati)) #converts characters into numeric, very useful
+         
+
+
+#summary(merged_data2)
+#skimr::skim(merged_data2)
