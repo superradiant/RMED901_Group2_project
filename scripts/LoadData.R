@@ -12,4 +12,6 @@ merged_data2 <- merged_data %>%
            sep = "_") %>% # splits column into two
   rename(gender = '1gender',
          bmi = `BMI kg/m2`) # renames column head
-
+summary(merged_data2)
+library(skimr)
+skim(merged_data2)
