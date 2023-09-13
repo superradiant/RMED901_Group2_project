@@ -7,5 +7,9 @@ data2 <- read_delim(here("data_original", "exam_data_join.txt"))
 data2 <- distinct(data2)
 merged_data <- merge.data.frame(data1, data2)
 merged_data2 <- merged_data %>%
+  separate(col = preOp_ASA_Mallampati, 
+           into = c("ASA", "Mallampati"), 
+           sep = "_") %>% # splits column into two
   rename(gender = '1gender',
-         BMI = `BMI kg/m2`) # renames column head
+         bmi = `BMI kg/m2`) # renames column head
+
