@@ -12,13 +12,22 @@ merged_data2 <- merged_data %>%
            into = c("ASA", "Mallampati"), 
            sep = "_") %>% # splits column into two
   rename(gender = '1gender',
-         bmi = `BMI kg/m2`) # renames column head
+         bmi = `BMI kg/m2`,
+         age = preOp_age,
+         smoking = preOp_smoking,
+         pain = preOp_pain,
+         treatment = treat) # renames column head
+#gender <- merged_data2 %>%
+#  +     group_by(preOp_gender, gender) %>%
+#  +     reframe(preOp_gender, gender)
+#View(gender) #both gender Columns are the same. One can be deleted
 merged_data2 <- merged_data2 %>%
   mutate(gender = case_when(gender == "0" ~ "M",
                             gender == "1" ~ "F",
                             TRUE ~"Other")) %>%
-  mutate(ASA = as.numeric(ASA),
-         Mallampati = as.numeric(Mallampati)) #converts characters into numeric, very useful
+  mutate(asa = as.numeric(ASA),
+         mallampati = as.numeric(Mallampati))#converts characters into numeric, very useful
+
          
 
 
