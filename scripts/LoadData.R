@@ -7,6 +7,7 @@ data2 <- read_delim(here("data_original", "exam_data_join.txt"))
 data2 <- distinct(data2)
 #antijoined <- anti_join(data1, data2) #no not matchings
 merged_data <- left_join(data1, data2)
+merged_data <- subset(merged_data, select = -c(month, year, preOp_gender)) #the columns "1gender" and "preOp_gender" are the same
 merged_data2 <- merged_data %>%
   separate(col = preOp_ASA_Mallampati, 
            into = c("asa", "mallampati"), 
@@ -18,10 +19,6 @@ merged_data2 <- merged_data %>%
          pain = preOp_pain,
          treatment = treat
          ) # renames column head
-#gender <- merged_data2 %>%
-#  +     group_by(preOp_gender, gender) %>%
-#  +     reframe(preOp_gender, gender)
-#View(gender) #both gender Columns are the same. One can be deleted
 merged_data2 <- merged_data2 %>%
   mutate(gender = case_when(gender == "0" ~ "M",
                             gender == "1" ~ "F",
