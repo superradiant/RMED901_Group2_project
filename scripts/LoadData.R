@@ -32,6 +32,9 @@ merged_data2 <- merged_data2 %>%
                                treatment == 1 ~ "Yes")) %>%
   mutate(asa = as.numeric(asa),
          mallampati = as.numeric(mallampati)) %>% #converts characters into numeric, very useful
+  mutate(extubation_cough=as.factor(extubation_cough)) %>% #glimpse()
+  mutate(changeincough = if_else(pod1am_cough == extubation_cough, "No", "Yes")) %>% #count(changeincough) task a column showing whether severity of cough changed from "extubation" to "pod1am"
+  mutate(changeinpain = if_else(pod1am_cough == pacu30min_throatPain, "No", "Yes")) %>% #column showing whether severity of throat pain changed from "pacu30min" to "pod1am"
   mutate(bmi_4groups= cut(bmi, 4, labels = c("1st quartile", "2nd quartile", "3rd quartile", "4th quartile"))) %>%## a column cutting BMI into quartiles (4 equal parts); HINT: cut() function
   select(patient_id, bmi, age, smoking, gender, everything()) %>% 
   arrange(patient_id) #- Arrange patient_id column of your dataset in order of increasing number or #alphabetically
