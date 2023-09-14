@@ -40,7 +40,11 @@ merged_data2 <- merged_data2 %>%
   arrange(patient_id) #- Arrange patient_id column of your dataset in order of increasing number or #alphabetically
 
 write_csv(merged_data2, here("data_processed", "data_merged.csv")) #write output so others scripts can use it
-  
+
+#Please create a new branch today named "yourname_Day7"
+#and work on this script. Please do not generate new scripts 
+#if you don't need to. This makes the merging easier and our
+#supervisors can see the contribution part in GitHub.
 
 #summary(merged_data2)
 #skimr::skim(merged_data2)
