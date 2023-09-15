@@ -1,14 +1,6 @@
 
 ###4. Day 7: Create plots that would help answer these questions:
 
-- Are there any correlated measurements?
-#  - Does the age distribution depend on `treat`?
-#  - Does the age distribution of the patients depend on their sex (`gender`)?
-#  - Does the preoperative pain change with age of the patients?
-#  - Do BMI and age have a linear relationship?
-  
-  
-  #Does the age distribution depend on `treat`? the treat is bmi
   
   
 # age and amount of smoking
@@ -40,7 +32,7 @@ plot_smoking2<-ggplot(merged_data2, aes(x=smoking, y=age)) +
 plot_smoking2
 
 
-#plot age distribution and gender in a "jitter plot"
+#Age distribution and gender
 plot_gender_age<-ggplot(merged_data2,
                      aes(
                        x=gender,
@@ -48,13 +40,17 @@ plot_gender_age<-ggplot(merged_data2,
   geom_jitter(aes(col=gender))
 plot_gender_age
 
-#Boxplot with ages
+#Boxplot with ages and gender
 boxplot_gender_age2<-ggplot(merged_data2,
                         aes(
                           x=gender,
                           y= age)) +
-  geom_boxplot(aes(col=gender))
+geom_boxplot(aes(col=gender))
 boxplot_gender_age2
+# The age distribution is quite similar between genders
+
+#Showing the plots side by side
+plot_gender_age + boxplot_gender_age2
 
 #  - Does the preoperative pain change with age of the patients?
 preoperative_pain_plot<-ggplot(merged_data2,

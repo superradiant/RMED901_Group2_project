@@ -151,6 +151,18 @@ plot_gender_age + boxplot_gender_age2
 
 
 
+```{r}
+#Does the treatment depend on the preoperative smoking
+merged_data2 %>%
+  mutate(treatment=ifelse(treatment=="Yes", 1, 0),
+         smoking=ifelse(smoking=="Never", 0, 1)) %>% 
+  t.test(treatment~smoking, data = .) %>%
+  broom::tidy() 
+#The test gives a non-significant p-value, showing that there is no difference between smokers and not-smokers.
+```
+
+
+
 ##Session Info
 ```{r}
 sessionInfo()
