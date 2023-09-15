@@ -7,6 +7,7 @@ output: html_document:
   code_folding: hide 
 ---
 
+##Read and tidy the dataset
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -16,15 +17,17 @@ library(patchwork)
 library(devtools)
 library(ggplot2)
 library(usethis)
-data1 <- read_delim(here("data_original", "exam_data.txt"))
+data1 <- read_delim(here("../data_original", "exam_data.txt"))
+data2 <- read_delim(here("../data_original", "exam_data_join.txt"))
+```
+Datasets contains multiple entries for some partient ids. Therefore we use `distinct` to remove these and overwrite the Dataframes `data1` and `data2`. Now both dataframes contain the same patient IDs and can be joined via `joinleft`.
+
+```{r setup, include=FALSE} 
 data1 <- distinct(data1) # removes duplicated columns, always check
-data2 <- read_delim(here("data_original", "exam_data_join.txt"))
 data2 <- distinct(data2)
 ```
 
-##Loading Data
 
-##Tidying and Merging Dataframes
 
 The `gender` column includes `r unique(data1$gender)`
 
