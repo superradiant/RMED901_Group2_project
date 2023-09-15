@@ -7,29 +7,44 @@ data2 <- read_delim(here("data_original", "exam_data_join.txt"))
 data2 <- distinct(data2)
 #antijoined <- anti_join(data1, data2) #no not matchings
 merged_data <- left_join(data1, data2)
+merged_data <- subset(merged_data, select = -c(month, year, preOp_gender)) #the columns "1gender" and "preOp_gender" are the same
 merged_data2 <- merged_data %>%
   separate(col = preOp_ASA_Mallampati, 
-           into = c("ASA", "Mallampati"), 
+           into = c("asa", "mallampati"), 
            sep = "_") %>% # splits column into two
   rename(gender = '1gender',
          bmi = `BMI kg/m2`,
          age = preOp_age,
          smoking = preOp_smoking,
          pain = preOp_pain,
-         treatment = treat) # renames column head
-#gender <- merged_data2 %>%
-#  +     group_by(preOp_gender, gender) %>%
-#  +     reframe(preOp_gender, gender)
-#View(gender) #both gender Columns are the same. One can be deleted
+         treatment = treat
+         ) # renames column head
 merged_data2 <- merged_data2 %>%
-  mutate(gender = case_when(gender == "0" ~ "M",
-                            gender == "1" ~ "F",
-                            TRUE ~"Other")) %>%
-  mutate(asa = as.numeric(ASA),
-         mallampati = as.numeric(Mallampati))#converts characters into numeric, very useful
+  mutate(gender = case_when(gender == "0" ~ "Male",
+                            gender == "1" ~ "Female",
+                            TRUE ~"Other")) %>% #gender to "Male" and "Female" instead of "0"/"1"
+  mutate(smoking = case_when(smoking == 1 ~ "Current",
+                             smoking == 2 ~ "Past",
+                             smoking == 3 ~ "Never")) %>%
+  mutate(pain = case_when(pain == 0 ~ "No",
+                          pain == 1 ~ "Yes")) %>%
+  mutate(treatment = case_when(treatment == 0 ~ "No",
+                               treatment == 1 ~ "Yes")) %>%
+  mutate(asa = as.numeric(asa),
+         mallampati = as.numeric(mallampati)) %>% #converts characters into numeric, very useful
+  mutate(extubation_cough=as.factor(extubation_cough)) %>% #glimpse()
+  mutate(changeincough = if_else(pod1am_cough == extubation_cough, "No", "Yes")) %>% #count(changeincough) task a column showing whether severity of cough changed from "extubation" to "pod1am"
+  mutate(changeinpain = if_else(pod1am_cough == pacu30min_throatPain, "No", "Yes")) %>% #column showing whether severity of throat pain changed from "pacu30min" to "pod1am"
+  mutate(bmi_4groups= cut(bmi, 4, labels = c("1st quartile", "2nd quartile", "3rd quartile", "4th quartile"))) %>%## a column cutting BMI into quartiles (4 equal parts); HINT: cut() function
+  select(patient_id, bmi, age, smoking, gender, everything()) %>% 
+  arrange(patient_id) #- Arrange patient_id column of your dataset in order of increasing number or #alphabetically
 
-         
+write_csv(merged_data2, here("data_processed", "data_merged.csv")) #write output so others scripts can use it
 
+#Please create a new branch today named "yourname_Day7"
+#and work on this script. Please do not generate new scripts 
+#if you don't need to. This makes the merging easier and our
+#supervisors can see the contribution part in GitHub.
 
 #summary(merged_data2)
 #skimr::skim(merged_data2)
