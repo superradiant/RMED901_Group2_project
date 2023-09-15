@@ -101,7 +101,7 @@ The data includes number of co ....... per year from `r min(data1$year)` to `r m
 ```{r}
 #  Only for persons with BMI <25
 merged_data2 %>% 
-  filter(BMI_above25=="BMI under 25") %>% 
+  filter(bmi<25) %>% 
   summarise(max(age, na.rm = T), 
             min(age, na.rm = T), 
             mean(age, na.rm = T), 
