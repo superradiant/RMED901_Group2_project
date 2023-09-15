@@ -86,18 +86,75 @@ merged_data2 <- merged_data2 %>%
 ```
 
 
+
 ##Read and tidy the dataset
 We stratified our data by a categorical column, 'gender' ('r (merged_data2$gender)') and report min, max, mean and sd of a numeric column, 'age'.
     - Then we stratified the data by a categorical column (only persons with BMI <25, females, persons >50 years of age, or persons who had coughing at extubation) and reported min, max, mean and sd of a numeric column for a defined set of observations. We used age as numeric variable.
         
     - Use two categorical columns in your dataset to create a table (hint: ?count)
 
+## tidy the dataset and exploring
+# Explore the data 
+
+```{r}
+summary (merged_data2)
+glimpse (merged_data2)
+
+library(skimr)
+
+skim(merged_data2)
+
+naniar::gg_miss_var(merged_data2) # There is to missing data for several variables, 236 patient were enrolled , we have 235 observations? 
+
+naniar::gg_miss_var(merged_data2, facet = gender) # the missing variables are in menn
+
+```
+
+# Two categorical columns to create a table
+
+```{r}
+Table<- merged_data2 %>%
+  count(gender, pacu30min_cough)
+Table
+
+```
+
+## Plots
+
+```{r}
+ggplot(data = merged_data2) +
+  aes(
+    x = pacu30min_throatPain,
+    y = pacu30min_cough
+  ) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# There seems to be a correlation between 30 min throatpain and 30 min cough
+```
+
+```{r}
+ggplot(merged_data2, aes(x=as.factor(treatment), y=age)) +
+  geom_col(aes(fill = age), position=position_dodge())
+
+# Yes the age distribution depends on treatment, alot of young people were not treated.  
+```
 
 
+## Statistical test 
 
-The `gender` column includes `r unique(data1$gender)`
+```{r}
+Test_gender_patient <- merged_data2 %>%
+  mutate (treatment=ifelse(treatment=="Yes", 1, 0), 
+          gender=ifelse(gender=="Male", 0, 1)) %>% 
+  t.test( treatment~gender, data = .)
+  broom::tidy (Test_gender_patient)
+  Test_gender_patient
 
-The data includes number of co ....... per year from `r min(data1$year)` to `r max(data1$year)`
+# Welch Two Sample t-test gives the p-values 0.5, so the treatment does not depend on the patient.
+```
+
+
 ```{r}
 #  Only for persons with BMI <25
 merged_data2 %>% 
