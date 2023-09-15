@@ -22,7 +22,9 @@ data2 <- read_delim(here("data_original", "exam_data_join.txt"))
 data2 <- distinct(data2)
 ```
 
-##Merging and Tidying raw dataset
+##Loading Data
+
+##Tidying and Merging Dataframes
 
 The `gender` column includes `r unique(data1$gender)`
 
@@ -37,7 +39,7 @@ head(data1)
 sessionInfo()
 ```
 
-asdf
+
 
 
 
