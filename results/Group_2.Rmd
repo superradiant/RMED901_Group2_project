@@ -1,0 +1,43 @@
+---
+title: "Group 2"
+author: "Ingvild, Melissa, Jan"
+date: "2023-09-15"
+output: html_document:
+  toc: true
+  code_folding: hide 
+---
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(skimr)
+library(patchwork)
+library(devtools)
+library(ggplot2)
+library(usethis)
+data1 <- read_delim(here("data_original", "exam_data.txt"))
+data1 <- distinct(data1) # removes duplicated columns, always check
+data2 <- read_delim(here("data_original", "exam_data_join.txt"))
+data2 <- distinct(data2)
+```
+
+##Merging and Tidying raw dataset
+
+The `gender` column includes `r unique(data1$gender)`
+
+The data includes number of co ....... per year from `r min(data1$year)` to `r max(data1$year)`
+```{r}
+head(data1)
+```
+
+
+##Session Info
+```{r}
+sessionInfo()
+```
+
+
+
+
+
