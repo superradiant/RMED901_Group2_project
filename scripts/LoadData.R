@@ -34,7 +34,7 @@ merged_data2 <- merged_data2 %>%
          mallampati = as.numeric(mallampati)) %>% #converts characters into numeric, very useful
   mutate(extubation_cough=as.factor(extubation_cough)) %>% #glimpse()
   mutate(changeincough = if_else(pod1am_cough == extubation_cough, "No", "Yes")) %>% #count(changeincough) task a column showing whether severity of cough changed from "extubation" to "pod1am"
-  mutate(changeinpain = if_else(pod1am_cough == pacu30min_throatPain, "No", "Yes")) %>% #column showing whether severity of throat pain changed from "pacu30min" to "pod1am"
+  mutate(changeinpain = if_else(pod1am_throatPain == pacu30min_throatPain, "No", "Yes")) %>% #column showing whether severity of throat pain changed from "pacu30min" to "pod1am"
   mutate(bmi_4groups= cut(bmi, 4, labels = c("1st quartile", "2nd quartile", "3rd quartile", "4th quartile"))) %>%## a column cutting BMI into quartiles (4 equal parts); HINT: cut() function
   select(patient_id, bmi, age, smoking, gender, everything()) %>% 
   arrange(patient_id) #- Arrange patient_id column of your dataset in order of increasing number or #alphabetically
@@ -43,8 +43,7 @@ write_csv(merged_data2, here("data_processed", "data_merged.csv")) #write output
 
 #Please create a new branch today named "yourname_Day7"
 #and work on this script. Please do not generate new scripts 
-#if you don't need to. This makes the merging easier and our
-#supervisors can see the contribution part in GitHub.
+#if you don't need to. This makes the merging easier and oursupervisors can see the contribution part in GitHub.
 
 #summary(merged_data2)
 #skimr::skim(merged_data2)

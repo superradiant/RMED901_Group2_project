@@ -12,7 +12,7 @@ library(usethis)
 #We have used age as continuous variable
 
 #gender and age (min, max, mean and sd)
-merged_data2 %>% 
+Age_by_gender <- merged_data2 %>% 
   group_by(gender) %>% #stratified by gender
   summarise(max(age, na.rm = T), min(age, na.rm = T), mean(age, na.rm = T), sd(age, na.rm=T))
 
