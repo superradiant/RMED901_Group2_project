@@ -2,12 +2,14 @@
 title: "Group 2"
 author: "Ingvild, Melissa, Jan"
 date: "2023-09-15"
-output: html_document:
-  toc: true
-  code_folding: hide 
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
 ---
 
 ##Read and tidy the dataset
+Datasets contains multiple entries for some partient ids. Therefore we use `distinct` to remove these and overwrite the Dataframes `data1` and `data2`.
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -17,15 +19,69 @@ library(patchwork)
 library(devtools)
 library(ggplot2)
 library(usethis)
-data1 <- read_delim(here("../data_original", "exam_data.txt"))
-data2 <- read_delim(here("../data_original", "exam_data_join.txt"))
-```
-Datasets contains multiple entries for some partient ids. Therefore we use `distinct` to remove these and overwrite the Dataframes `data1` and `data2`. Now both dataframes contain the same patient IDs and can be joined via `joinleft`.
-
-```{r setup, include=FALSE} 
+data1 <- read_delim(here("data_original", "exam_data.txt"))
 data1 <- distinct(data1) # removes duplicated columns, always check
+data2 <- read_delim(here("data_original", "exam_data_join.txt"))
 data2 <- distinct(data2)
 ```
+
+To check the overlap of both dataframes `antijoin` was :
+```{r}
+antijoined <- anti_join(data1, data2) #no not matchings
+```
+No entries are generated using `antijoin`, which means that patient IDs from both dataframes match perfectly.
+Therefore IDs and can be joined via `joinleft`.
+
+```{r}
+merged_data <- left_join(data1, data2)
+```
+Unwanted columns like year, month and preOp_gender (2 gender columns with identical entries) were removed.
+```{r}
+merged_data <- subset(merged_data, select = -c(month, year, preOp_gender))
+```
+The column `preOp_ASA_Mallampati` contained two entries and was split into two columns `asa` and `mallampati`. For better understanding columnheads were renamed into `bmi`, `age`, `smoking`, `pain` and `treatment`.
+```{r}
+merged_data2 <- merged_data %>%
+  separate(col = preOp_ASA_Mallampati, 
+           into = c("asa", "mallampati"), 
+           sep = "_") %>% # splits column into two
+  rename(gender = '1gender',
+         bmi = `BMI kg/m2`,
+         age = preOp_age,
+         smoking = preOp_smoking,
+         pain = preOp_pain,
+         treatment = treat
+         ) # renames column head
+```
+For better understanding the gender code for male and female patients was changed from 0 and 1 to "Male" and "Female". Same is true for smoking, pain and treatment columns. Using `separate` two separate a `chr` column into two, generates two `chr` columns. Converting `asa` and `mallampati` into numeric entries using `as.numeric`.
+```{r}
+merged_data2 <- merged_data2 %>%
+  mutate(gender = case_when(gender == "0" ~ "Male",
+                            gender == "1" ~ "Female",
+                            TRUE ~"Other")) %>% #gender to "Male" and "Female" instead of "0"/"1"
+  mutate(smoking = case_when(smoking == 1 ~ "Current",
+                             smoking == 2 ~ "Past",
+                             smoking == 3 ~ "Never")) %>%
+  mutate(pain = case_when(pain == 0 ~ "No",
+                          pain == 1 ~ "Yes")) %>%
+  mutate(treatment = case_when(treatment == 0 ~ "No",
+                               treatment == 1 ~ "Yes")) %>%
+  mutate(asa = as.numeric(asa),
+         mallampati = as.numeric(mallampati)) %>% #converts characters into numeric, very useful
+  mutate(extubation_cough=as.factor(extubation_cough)) %>% #glimpse()
+  mutate(changeincough = if_else(pod1am_cough == extubation_cough, "No", "Yes")) %>% #count(changeincough) task a column showing whether severity of cough changed from "extubation" to "pod1am"
+  mutate(changeinpain = if_else(pod1am_cough == pacu30min_throatPain, "No", "Yes")) %>% #column showing whether severity of throat pain changed from "pacu30min" to "pod1am"
+  mutate(bmi_4groups= cut(bmi, 4, labels = c("1st quartile", "2nd quartile", "3rd quartile", "4th quartile"))) %>%## a column cutting BMI into quartiles (4 equal parts); HINT: cut() function
+  select(patient_id, bmi, age, smoking, gender, everything()) %>% 
+  arrange(patient_id) #- Arrange patient_id column of your dataset in order of increasing number or #alphabetically
+```
+
+
+
+
+
+
+
 
 
 
