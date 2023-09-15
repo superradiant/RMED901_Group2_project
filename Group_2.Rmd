@@ -126,6 +126,29 @@ merged_data2 %>%
             sd(age, na.rm=T))
 
 ```
+### Plots showing the distribution of age according to gender.
+The distribution seems quite similar between genders in this study
+
+```{r}
+plot_gender_age<-ggplot(merged_data2,
+                     aes(
+                       x=gender,
+                       y= age)) +
+  geom_jitter(aes(col=gender))
+plot_gender_age
+
+boxplot_gender_age2<-ggplot(merged_data2,
+                        aes(
+                          x=gender,
+                          y= age)) +
+geom_boxplot(aes(col=gender))
+boxplot_gender_age2
+# 
+
+#Showing the plots side by side
+plot_gender_age + boxplot_gender_age2
+```
+
 
 
 ##Session Info
