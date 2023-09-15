@@ -141,6 +141,8 @@ Test_gender_patient <- merged_data2 %>%
   mutate (treatment=ifelse(treatment=="Yes", 1, 0), 
           gender=ifelse(gender=="Male", 0, 1)) %>% 
   t.test( treatment~gender, data = .)
+  broom::tidy (Test_gender_patient)
+  Test_gender_patient
 
 # Welch Two Sample t-test gives the p-values 0.5, so the treatment does not depend on the patient.
 ```
