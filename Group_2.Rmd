@@ -86,6 +86,13 @@ merged_data2 <- merged_data2 %>%
 ```
 
 
+
+##Read and tidy the dataset
+We stratified our data by a categorical column, 'gender' ('r (merged_data2$gender)') and report min, max, mean and sd of a numeric column, 'age'.
+    - Then we stratified the data by a categorical column (only persons with BMI <25, females, persons >50 years of age, or persons who had coughing at extubation) and reported min, max, mean and sd of a numeric column for a defined set of observations. We used age as numeric variable.
+        
+    - Use two categorical columns in your dataset to create a table (hint: ?count)
+
 ## tidy the dataset and exploring
 # Explore the data 
 
@@ -149,8 +156,68 @@ Test_gender_patient <- merged_data2 %>%
 
 
 ```{r}
-head(data1)
+#  Only for persons with BMI <25
+merged_data2 %>% 
+  filter(bmi<25) %>% 
+  summarise(max(age, na.rm = T), 
+            min(age, na.rm = T), 
+            mean(age, na.rm = T), 
+            sd(age, na.rm=T))
+#Only females
+merged_data2 %>% 
+  filter(gender== "Female") %>% #only women
+  summarise(max(age, na.rm = T), min(age, na.rm = T), mean(age, na.rm = T), sd(age, na.rm=T))
+#- Only for persons older than 50 years of age
+merged_data2 %>% 
+  filter(age> 50) %>% 
+  summarise(max(age, na.rm = T), 
+            min(age, na.rm = T), 
+            mean(age, na.rm = T), 
+            sd(age, na.rm=T)) 
+#Only for persons who had experienced coughing at extubation
+merged_data2 %>% 
+  filter(as.numeric(extubation_cough) >1) %>% #patient had cough 
+  summarise(max(age, na.rm = T), 
+            min(age, na.rm = T), 
+            mean(age, na.rm = T), 
+            sd(age, na.rm=T))
+
 ```
+### Plots showing the distribution of age according to gender.
+The distribution seems quite similar between genders in this study
+
+```{r}
+plot_gender_age<-ggplot(merged_data2,
+                     aes(
+                       x=gender,
+                       y= age)) +
+  geom_jitter(aes(col=gender))
+plot_gender_age
+
+boxplot_gender_age2<-ggplot(merged_data2,
+                        aes(
+                          x=gender,
+                          y= age)) +
+geom_boxplot(aes(col=gender))
+boxplot_gender_age2
+# 
+
+#Showing the plots side by side
+plot_gender_age + boxplot_gender_age2
+```
+
+
+
+```{r}
+#Does the treatment depend on the preoperative smoking
+merged_data2 %>%
+  mutate(treatment=ifelse(treatment=="Yes", 1, 0),
+         smoking=ifelse(smoking=="Never", 0, 1)) %>% 
+  t.test(treatment~smoking, data = .) %>%
+  broom::tidy() 
+#The test gives a non-significant p-value, showing that there is no difference between smokers and not-smokers.
+```
+
 
 
 ##Session Info
