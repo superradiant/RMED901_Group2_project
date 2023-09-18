@@ -73,12 +73,16 @@ plot_preoperativepain<- ggplot(merged_data2,
 plot_preoperativepain
 
   
-#  - Do BMI and age have a linear relationship? This makes a scatterplot over these two variables
-scatterplotBMI_AGE<-ggplot(merged_data2,
-                           aes(x=age,
-                               y=bmi)) + 
-  geom_point()
+
+#ADD in to the work from DAY 7
+
+#  Do BMI and age have a linear relationship? This makes a scatterplot over these two variables
+scatterplotBMI_AGE<-ggplot(merged_data2,aes(x=age,y=bmi))+
+  geom_point() +
+  geom_smooth(method="lm")
 scatterplotBMI_AGE
+
+#the relationship seems to be linear at first glance, although there is a change when the patients are older, then the BMI seems to decline a bit.
 
 
 
