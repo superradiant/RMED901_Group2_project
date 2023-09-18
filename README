@@ -1,34 +1,26 @@
-README
-
 Project Titel: RMED901 Group 2 Project 
-Group members: Jan, Ingvild, Melissa
-Project Description: Hypothesis: Gargling with licorice solution immediately before induction of anesthesia prevents sore throat and postextubation coughing in patients intubated with double-lumen tubes. Licorice gargling to reduce postoperative sore throat after endotracheal intubation.
+Group members: Jan (In GitHub: superradiant), Ingvild (Ingvildbrus), Melissa (melbal)
+Project Description: "Licorice gargling" Study hypothesis: Gargling with licorice solution immediately before induction of anesthesia prevents sore throat and postextubation coughing in patients intubated with double-lumen tubes. 
+Licorice gargling to reduce postoperative sore throat after endotracheal intubation.
 Date: 2023-09-15
 
 Folders: 
 data_original: 
 - Codebook.html
-- Raw data is called exam_data.txt, and we have a joint file called exam_data_join.txt
+- Raw data: 
+	- exam_data.txt (main raw file from Licorice study, pre and post-operational data)
+	- exam_data_join.txt (additional data from the study, data from the surgical ward, identical patient IDs)
 
 data-processed
-- datamerged_csv, is the merged file. 
+- datamerged_csv, is a merged file of the two raw files. 
 
-Questions:
-- exam_desrciption
+Questions: Assignments from the RMED901 course
+- exam_description
 
 Scripts: 
 LoadData, contain the script for cleaning the data, and also different analysis merged by group members.
+Ingvildscript.R, DAY7_vizualization_Ingvild and Melissa day6 are all scripts where we have tried things out.
 
+NB: The first repository in GitHub made for this group did not work. Made a new repository called RMED901_GROUP2_project, use this.   
 
-Complications: The first repository made for this group did not work. Made a new repository called RMED901_GROUP2_project. Did not have a good flow with committing, pushing and pulling initially.  
-
-Experience learned: Everyone should create own scripts using their name and date and to the analysis there, and then add the analysis in the the main script (Load.Data). This will make the merging of different tasks much easier. 
-
-
-
-
-
-
-
-
-
+NB2: We have experienced that our initial work flow was inefficient, and would have worked differently to make the merging of different tasks much easier. 
