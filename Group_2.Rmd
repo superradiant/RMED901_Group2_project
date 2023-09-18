@@ -87,6 +87,7 @@ merged_data2 <- merged_data2 %>%
 
 
 
+
 ##Read and tidy the dataset
 We stratified our data by a categorical column, 'gender' ('r (merged_data2$gender)') and report min, max, mean and sd of a numeric column, 'age'.
     - Then we stratified the data by a categorical column (only persons with BMI <25, females, persons >50 years of age, or persons who had coughing at extubation) and reported min, max, mean and sd of a numeric column for a defined set of observations. We used age as numeric variable.
@@ -96,17 +97,17 @@ We stratified our data by a categorical column, 'gender' ('r (merged_data2$gende
 ## Tidy the dataset and exploring
 ### Explore the data 
 
+
+
 ```{r}
 summary (merged_data2)
 glimpse (merged_data2)
-
-library(skimr)
-
 skim(merged_data2)
 
 naniar::gg_miss_var(merged_data2) # There is to missing data for several variables, 236 patient were enrolled , we have 235 observations? 
 
 naniar::gg_miss_var(merged_data2, facet = gender) # the missing variables are in menn
+
 
 ```
 
@@ -152,8 +153,14 @@ Test_gender_patient <- merged_data2 %>%
   Test_gender_patient
 
 # Welch Two Sample t-test gives the p-values 0.5, so the treatment does not depend on the patient.
+
 ```
 
+##Read and tidy the dataset
+We stratified our data by a categorical column, 'gender' ('r (merged_data2$gender)') and report min, max, mean and sd of a numeric column, 'age'.
+    - Then we stratified the data by a categorical column (only persons with BMI <25, females, persons >50 years of age, or persons who had coughing at extubation) and reported min, max, mean and sd of a numeric column for a defined set of observations. We used age as numeric variable.
+        
+    - Use two categorical columns in your dataset to create a table (hint: ?count)
 
 ```{r}
 #  Only for persons with BMI <25
@@ -183,8 +190,41 @@ merged_data2 %>%
             sd(age, na.rm=T))
 
 ```
+
 ### Plots showing the distribution of age according to gender.
 The age distribution seems quite similar between genders in this study
+
+
+```{r}
+Table<- merged_data2 %>%
+  count(gender, pacu30min_cough)
+Table
+
+```
+
+## Plots
+
+```{r}
+ggplot(data = merged_data2) +
+  aes(
+    x = pacu30min_throatPain,
+    y = pacu30min_cough
+  ) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# There seems to be a correlation between 30 min throatpain and 30 min cough
+```
+
+```{r}
+ggplot(merged_data2, aes(x=as.factor(treatment), y=age)) +
+  geom_col(aes(fill = age), position=position_dodge())
+
+# Yes the age distribution depends on treatment, alot of young people were not treated.  
+```
+Plots showing the distribution of age according to gender.
+The distribution seems quite similar between genders in this study
+
 
 ```{r}
 plot_gender_age<-ggplot(merged_data2,
@@ -201,28 +241,45 @@ geom_boxplot(aes(col=gender))
 
 #Showing the plots side by side
 plot_gender_age + boxplot_gender_age2
+
 ```
 
+## Statistical tests 
+
+```{r}
+Test_gender_vs_patient <- merged_data2 %>%
+  mutate (treatment=ifelse(treatment=="Yes", 1, 0), 
+          gender=ifelse(gender=="Male", 0, 1)) %>% 
+  t.test( treatment~gender, data = .)
+  broom::tidy(Test_gender_vs_patient)
+# Welch Two Sample t-test gives the p-values 0.5, so the treatment does not depend on the patient.
+```
 
 
 ```{r}
-#Does the treatment depend on preoperative smoking
-merged_data2 %>%
+
+
+#Does the treatment depend on the preoperative smoking
+Test_treatment_vs_smoking <- merged_data2 %>%
+
   mutate(treatment=ifelse(treatment=="Yes", 1, 0),
          smoking=ifelse(smoking=="Never", 0, 1)) %>% 
   t.test(treatment~smoking, data = .) %>%
-  broom::tidy() 
+  broom::tidy(Test_treatment_vs_smoking)
 #The test gives a non-significant p-value, showing that there is no difference between smokers and not-smokers.
 ```
 
+```{r}
+#Does the treatment depend on the preoperative smoking
+Test_treatment_vs_pain <- merged_data2 %>%
+  mutate(treatment=ifelse(treatment=="Yes", 1, 0), 
+         pain=ifelse(pain=="Yes", 1, 0)) %>% 
+  t.test(treatment~pain, data = .)
+broom::tidy(Test_treatment_vs_pain)
+```
 
 
 ##Session Info
 ```{r}
 sessionInfo()
 ```
-
-
-
-
-
