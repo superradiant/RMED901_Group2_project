@@ -1,5 +1,5 @@
 ---
-title: "asdf"
+title: "Licorice gargle - A group project during RMED901"
 author: "Ingvild, Melissa, Jan"
 date: "2023-09-15"
 output:
@@ -78,7 +78,7 @@ merged_data2 <- merged_data2 %>%
   mutate(changeinpain = if_else(pod1am_throatPain == pacu30min_throatPain, "No", "Yes")) %>% #column showing whether severity of throat pain changed from "pacu30min" to "pod1am"
   mutate(bmi_4groups= cut(bmi, 4, labels = c("1st quartile", "2nd quartile", "3rd quartile", "4th quartile"))) ## a column cutting BMI into quartiles (4 equal parts); HINT: cut() function
 ```
-Rearranging column sequence using `aragne` function
+Rearranging column sequence using `arrange` function
 ```{r}
 merged_data2 <- merged_data2 %>%
   select(patient_id, bmi, age, smoking, gender, everything()) %>% 
@@ -93,8 +93,8 @@ We stratified our data by a categorical column, 'gender' ('r (merged_data2$gende
         
     - Use two categorical columns in your dataset to create a table (hint: ?count)
 
-## tidy the dataset and exploring
-# Explore the data 
+## Tidy the dataset and exploring
+### Explore the data 
 
 ```{r}
 summary (merged_data2)
@@ -110,18 +110,18 @@ naniar::gg_miss_var(merged_data2, facet = gender) # the missing variables are in
 
 ```
 
-# Two categorical columns to create a table
+## Two categorical columns to create a table
 
 ```{r}
 Table<- merged_data2 %>%
-  count(gender, pacu30min_cough)
-Table
+  count(gender, smoking)
+knitr::kable(Table)
 
 ```
 
 ## Plots
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 ggplot(data = merged_data2) +
   aes(
     x = pacu30min_throatPain,
@@ -130,18 +130,18 @@ ggplot(data = merged_data2) +
   geom_point() +
   geom_smooth(method = "lm")
 
-# There seems to be a correlation between 30 min throatpain and 30 min cough
+# There seems to be a correlation between 30 min throat pain and 30 min cough
 ```
 
 ```{r}
 ggplot(merged_data2, aes(x=as.factor(treatment), y=age)) +
   geom_col(aes(fill = age), position=position_dodge())
 
-# Yes the age distribution depends on treatment, alot of young people were not treated.  
+# Yes the age distribution depends on treatment, a lot of young people were not treated.  
 ```
 
 
-## Statistical test 
+## Statistical tests 
 
 ```{r}
 Test_gender_patient <- merged_data2 %>%
@@ -184,7 +184,7 @@ merged_data2 %>%
 
 ```
 ### Plots showing the distribution of age according to gender.
-The distribution seems quite similar between genders in this study
+The age distribution seems quite similar between genders in this study
 
 ```{r}
 plot_gender_age<-ggplot(merged_data2,
@@ -192,15 +192,12 @@ plot_gender_age<-ggplot(merged_data2,
                        x=gender,
                        y= age)) +
   geom_jitter(aes(col=gender))
-plot_gender_age
 
 boxplot_gender_age2<-ggplot(merged_data2,
                         aes(
                           x=gender,
                           y= age)) +
 geom_boxplot(aes(col=gender))
-boxplot_gender_age2
-# 
 
 #Showing the plots side by side
 plot_gender_age + boxplot_gender_age2
@@ -209,7 +206,7 @@ plot_gender_age + boxplot_gender_age2
 
 
 ```{r}
-#Does the treatment depend on the preoperative smoking
+#Does the treatment depend on preoperative smoking
 merged_data2 %>%
   mutate(treatment=ifelse(treatment=="Yes", 1, 0),
          smoking=ifelse(smoking=="Never", 0, 1)) %>% 
