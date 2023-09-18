@@ -1,5 +1,5 @@
 ---
-title: "asdf"
+title: "Licorice gargle - A group project during RMED901"
 author: "Ingvild, Melissa, Jan"
 date: "2023-09-15"
 output:
@@ -85,7 +85,19 @@ merged_data2 <- merged_data2 %>%
   arrange(patient_id) #- Arrange patient_id column of your dataset in order of increasing number or #alphabetically
 ```
 
-# Explore the data 
+
+
+
+##Read and tidy the dataset
+We stratified our data by a categorical column, 'gender' ('r (merged_data2$gender)') and report min, max, mean and sd of a numeric column, 'age'.
+    - Then we stratified the data by a categorical column (only persons with BMI <25, females, persons >50 years of age, or persons who had coughing at extubation) and reported min, max, mean and sd of a numeric column for a defined set of observations. We used age as numeric variable.
+        
+    - Use two categorical columns in your dataset to create a table (hint: ?count)
+
+## Tidy the dataset and exploring
+### Explore the data 
+
+
 
 ```{r}
 summary (merged_data2)
@@ -95,6 +107,53 @@ skim(merged_data2)
 naniar::gg_miss_var(merged_data2) # There is to missing data for several variables, 236 patient were enrolled , we have 235 observations? 
 
 naniar::gg_miss_var(merged_data2, facet = gender) # the missing variables are in menn
+
+
+```
+
+## Two categorical columns to create a table
+
+```{r}
+Table<- merged_data2 %>%
+  count(gender, smoking)
+knitr::kable(Table)
+
+```
+
+## Plots
+
+```{r, warning=FALSE, message=FALSE}
+ggplot(data = merged_data2) +
+  aes(
+    x = pacu30min_throatPain,
+    y = pacu30min_cough
+  ) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# There seems to be a correlation between 30 min throat pain and 30 min cough
+```
+
+```{r}
+ggplot(merged_data2, aes(x=as.factor(treatment), y=age)) +
+  geom_col(aes(fill = age), position=position_dodge())
+
+# Yes the age distribution depends on treatment, a lot of young people were not treated.  
+```
+
+
+## Statistical tests 
+
+```{r}
+Test_gender_patient <- merged_data2 %>%
+  mutate (treatment=ifelse(treatment=="Yes", 1, 0), 
+          gender=ifelse(gender=="Male", 0, 1)) %>% 
+  t.test( treatment~gender, data = .)
+  broom::tidy (Test_gender_patient)
+  Test_gender_patient
+
+# Welch Two Sample t-test gives the p-values 0.5, so the treatment does not depend on the patient.
+
 ```
 
 ##Read and tidy the dataset
@@ -132,6 +191,10 @@ merged_data2 %>%
 
 ```
 
+### Plots showing the distribution of age according to gender.
+The age distribution seems quite similar between genders in this study
+
+
 ```{r}
 Table<- merged_data2 %>%
   count(gender, pacu30min_cough)
@@ -162,21 +225,26 @@ ggplot(merged_data2, aes(x=as.factor(treatment), y=age)) +
 Plots showing the distribution of age according to gender.
 The distribution seems quite similar between genders in this study
 
+
 ```{r}
 plot_gender_age<-ggplot(merged_data2,
                      aes(
                        x=gender,
                        y= age)) +
   geom_jitter(aes(col=gender))
+
 boxplot_gender_age2<-ggplot(merged_data2,
                         aes(
                           x=gender,
                           y= age)) +
 geom_boxplot(aes(col=gender))
-plot_gender_age + boxplot_gender_age2 #Showing the plots side by side
+
+#Showing the plots side by side
+plot_gender_age + boxplot_gender_age2
+
 ```
 
-## Statistical test 
+## Statistical tests 
 
 ```{r}
 Test_gender_vs_patient <- merged_data2 %>%
@@ -189,8 +257,11 @@ Test_gender_vs_patient <- merged_data2 %>%
 
 
 ```{r}
+
+
 #Does the treatment depend on the preoperative smoking
 Test_treatment_vs_smoking <- merged_data2 %>%
+
   mutate(treatment=ifelse(treatment=="Yes", 1, 0),
          smoking=ifelse(smoking=="Never", 0, 1)) %>% 
   t.test(treatment~smoking, data = .) %>%
