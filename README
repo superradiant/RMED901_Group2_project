@@ -8,7 +8,7 @@ Folders:
 
 data_original: 
 - Raw data: 
-	- exam_data.txt (main raw file from Licorice study, pre and post-operational data). NB: This file was changed by Türküler Özgümüs.
+	- exam_data.txt (main raw file from Licorice study, pre and post-operational data). NB: This file was changed by Türküler Özgümüs due to wrong file structure.
 	- exam_data_join.txt (additional data from the study, data from the surgical ward, identical patient IDs)
 
 data-processed
