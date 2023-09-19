@@ -109,7 +109,8 @@ Next we screened for missing variables in `"Male"`.
 #naniar::gg_miss_var(merged_data2) # There is to missing data for several variables, 236 patient were enrolled , we have 235 observations? 
 naniar::gg_miss_var(merged_data2, facet = gender) # the missing variables are in menn
 ```
-For patient ID's 113 and 123, no data were collected in the columns with the missing entries.
+
+Patients with the ID's 113 and 123 had no data entries in the columns with the missing entries.
 ```{r}
 which(is.na(merged_data2),arr.ind=TRUE)
 ```
