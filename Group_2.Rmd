@@ -22,6 +22,7 @@ library(usethis)
 ```
 # Read, tidy & explore
 Before analyzing, the data must be read in correctly, cleaned and checked for e.g. missing entries.
+
 ## Reading the dataframe
 Both provided `.txt` datasets contain headers and entries are separated via `space` or `\t` as delimiter. Therefore they can be read via `read_delim` function, which automatically recognizes the delimiter (but could be specified e.g. via `delim = "\t"`).
 Since both datasets contain multiple entries for some partient ids, we use `distinct` to remove duplicates and overwrite the dataframes `data1` and `data2` to generate data without duplicates.
@@ -79,7 +80,7 @@ merged_data2 <- merged_data2 %>%
   mutate(asa = as.numeric(asa),
          mallampati = as.numeric(mallampati)) #converts characters into numeric, very useful
 ```
-The next part of the script generates two new columns `changeincough` and `changeinpain`, which reveal if the severity of cough throat pain changed, respectively.
+The next part of the script creates two new columns "changeincough" and "changeinpain" that indicate whether the severity of the cough resp. throat pain has changed.
 In 'bmi_4groups' BMI is being cut into four groups of equal size.
 ```{r}
 merged_data2 <- merged_data2 %>%
@@ -167,6 +168,7 @@ knitr::kable(Table)
 
 # Plots
 
+Plot showing correlation between throat pain and cough 30 min after treatment.
 ```{r}
 ggplot(data = merged_data2) +
   aes(
@@ -179,6 +181,7 @@ ggplot(data = merged_data2) +
 # There seems to be a correlation between 30 min throatpain and 30 min cough
 ```
 
+Plot showing if age depends on treatment.
 ```{r}
 ggplot(merged_data2, aes(x=as.factor(treatment), y=age)) +
   geom_col(aes(fill = age), position=position_dodge())
