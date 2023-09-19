@@ -4,22 +4,26 @@ Project Description: "Licorice gargling" Study hypothesis: Gargling with licoric
 Licorice gargling to reduce postoperative sore throat after endotracheal intubation.
 Date: 2023-09-15
 
-Folders: 
+Folders:
+
 data_original: 
-- Codebook.html
 - Raw data: 
-	- exam_data.txt (main raw file from Licorice study, pre and post-operational data)
+	- exam_data.txt (main raw file from Licorice study, pre and post-operational data). NB: This file was changed by Türküler Özgümüs.
 	- exam_data_join.txt (additional data from the study, data from the surgical ward, identical patient IDs)
 
 data-processed
 - datamerged_csv, is a merged file of the two raw files. 
 
-Questions: Assignments from the RMED901 course
+questions: Assignments from the RMED901 course
 - exam_description
 
-Scripts: 
-LoadData, contain the script for cleaning the data, and also different analysis merged by group members.
-Ingvildscript.R, DAY7_vizualization_Ingvild and Melissa day6 are all scripts where we have tried things out.
+related_documents:
+- Codebook.html, provided by supervisors. 
+
+scripts: 
+- LoadData.R, contain the script for cleaning the data, and also different analysis merged by group members.
+- statistical_tests.R contains short scripts for performing statistical test.
+- Ingvildscript.R, DAY7_vizualization_Ingvild and Melissa day6 are all scripts where we have tried things out.
 
 NB: The first repository in GitHub made for this group did not work. Made a new repository called RMED901_GROUP2_project, use this.   
 
