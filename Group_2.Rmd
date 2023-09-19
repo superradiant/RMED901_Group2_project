@@ -5,11 +5,11 @@ date: "2023-09-15"
 output:
   html_document:
     toc: true
+    toc_float: true
+    number_sections: true
     toc_depth: 2
+    code_folding: hide
 ---
-
-##Read and tidy the dataset
-Datasets contains multiple entries for some partient ids. Therefore we use `distinct` to remove these and overwrite the Dataframes `data1` and `data2`.
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -19,23 +19,33 @@ library(patchwork)
 library(devtools)
 library(ggplot2)
 library(usethis)
+```
+# Read, tidy & explore
+Before analyzing, the data must be read in correctly, cleaned and checked for e.g. missing entries.
+## Reading the dataframe
+Both provided `.txt` datasets contain headers and entries are separated via `space` or `\t` as delimiter. Therefore they can be read via `read_delim` function, which automatically recognizes the delimiter (but could be specified e.g. via `delim = "\t"`).
+Since both datasets contain multiple entries for some partient ids, we use `distinct` to remove duplicates and overwrite the dataframes `data1` and `data2` to generate data without duplicates.
+```{r} 
 data1 <- read_delim(here("data_original", "exam_data.txt"))
 data1 <- distinct(data1) # removes duplicated columns, always check
 data2 <- read_delim(here("data_original", "exam_data_join.txt"))
 data2 <- distinct(data2)
 ```
 
-To check the overlap of both dataframes `antijoin` was :
+## Merging dataframes
+To check the overlap of both dataframes `antijoin` was used. No entries are generated using `antijoin`, which means that patient IDs from both dataframes match perfectly.
 ```{r}
 antijoined <- anti_join(data1, data2) #no not matchings
 ```
-No entries are generated using `antijoin`, which means that patient IDs from both dataframes match perfectly.
-Therefore IDs and can be joined via `joinleft`.
+
+Therefore IDs and can be joined using e.g. `joinleft`.
 
 ```{r}
 merged_data <- left_join(data1, data2)
 ```
-Unwanted columns like year, month and preOp_gender (2 gender columns with identical entries) were removed.
+
+## Tidying dataframe
+Unwanted columns like `year`, `month` and `preOp_gender` (`merged_data` datagrame cointains 2 gender columns with identical entries) were removed.
 ```{r}
 merged_data <- subset(merged_data, select = -c(month, year, preOp_gender))
 ```
@@ -53,7 +63,7 @@ merged_data2 <- merged_data %>%
          treatment = treat
          ) # renames column head
 ```
-For better understanding the gender code for male and female patients was changed from 0 and 1 to "Male" and "Female". Same is true for smoking, pain and treatment columns. Using `separate` two separate a `chr` column into two, generates two `chr` columns. Converting `asa` and `mallampati` into numeric entries using `as.numeric`.
+To improve readability, the initially used gender code for male and female patients was changed from `0` and `1` to `"Male"` and `"Female"`. Same is true for `smoking`, `pain` and `treatment` columns. Using `separate` two separate a `chr` column into two, generates two `chr` columns. Converting `asa` and `mallampati` into numeric entries using `as.numeric`.
 ```{r}
 merged_data2 <- merged_data2 %>%
   mutate(gender = case_when(gender == "0" ~ "Male",
@@ -69,99 +79,42 @@ merged_data2 <- merged_data2 %>%
   mutate(asa = as.numeric(asa),
          mallampati = as.numeric(mallampati)) #converts characters into numeric, very useful
 ```
-Created new sets of columns: `changeincough` and `changeinpain` showing if severity of cough bzw. throat pain changed. 
+The next part of the script generates two new columns `changeincough` and `changeinpain`, which reveal if the severity of cough throat pain changed, respectively.
 In 'bmi_4groups' BMI is being cut into four groups of equal size.
 ```{r}
 merged_data2 <- merged_data2 %>%
   mutate(extubation_cough=as.factor(extubation_cough)) %>% #glimpse()
   mutate(changeincough = if_else(pod1am_cough == extubation_cough, "No", "Yes")) %>% #count(changeincough) task a column showing whether severity of cough changed from "extubation" to "pod1am"
   mutate(changeinpain = if_else(pod1am_throatPain == pacu30min_throatPain, "No", "Yes")) %>% #column showing whether severity of throat pain changed from "pacu30min" to "pod1am"
-  mutate(bmi_4groups= cut(bmi, 4, labels = c("1st quartile", "2nd quartile", "3rd quartile", "4th quartile"))) ## a column cutting BMI into quartiles (4 equal parts); HINT: cut() function
+  mutate(bmi_4groups = cut(bmi, 4, labels = c("1st quartile", "2nd quartile", "3rd quartile", "4th quartile"))) ## a column cutting BMI into quartiles (4 equal parts); HINT: cut() function
 ```
-Rearranging column sequence using `arrange` function
+Rearranging column sequence using `arrange` function.
 ```{r}
 merged_data2 <- merged_data2 %>%
   select(patient_id, bmi, age, smoking, gender, everything()) %>% 
   arrange(patient_id) #- Arrange patient_id column of your dataset in order of increasing number or #alphabetically
 ```
 
-
-
-
-##Read and tidy the dataset
-We stratified our data by a categorical column, 'gender' ('r (merged_data2$gender)') and report min, max, mean and sd of a numeric column, 'age'.
-    - Then we stratified the data by a categorical column (only persons with BMI <25, females, persons >50 years of age, or persons who had coughing at extubation) and reported min, max, mean and sd of a numeric column for a defined set of observations. We used age as numeric variable.
-        
-    - Use two categorical columns in your dataset to create a table (hint: ?count)
-
-## Tidy the dataset and exploring
-### Explore the data 
-
-
-
+## Exploring
+The merged dataset contains 235 different patients (rows) and 23 different columns.
 ```{r}
-summary (merged_data2)
 glimpse (merged_data2)
-skim(merged_data2)
+```
 
-naniar::gg_miss_var(merged_data2) # There is to missing data for several variables, 236 patient were enrolled , we have 235 observations? 
-
+Next we screened for missing variables in `"Male"`.
+```{r}
+#summary (merged_data2)
+#glimpse (merged_data2)
+#skim(merged_data2)
+#naniar::gg_miss_var(merged_data2) # There is to missing data for several variables, 236 patient were enrolled , we have 235 observations? 
 naniar::gg_miss_var(merged_data2, facet = gender) # the missing variables are in menn
-
-
 ```
-
-## Two categorical columns to create a table
-
+For patient ID's 113 and 123, no data were collected in the columns with the missing entries.
 ```{r}
-Table<- merged_data2 %>%
-  count(gender, smoking)
-knitr::kable(Table)
-
+which(is.na(merged_data2),arr.ind=TRUE)
 ```
 
-## Plots
-
-```{r, warning=FALSE, message=FALSE}
-ggplot(data = merged_data2) +
-  aes(
-    x = pacu30min_throatPain,
-    y = pacu30min_cough
-  ) +
-  geom_point() +
-  geom_smooth(method = "lm")
-
-# There seems to be a correlation between 30 min throat pain and 30 min cough
-```
-
-```{r}
-ggplot(merged_data2, aes(x=as.factor(treatment), y=age)) +
-  geom_col(aes(fill = age), position=position_dodge())
-
-# Yes the age distribution depends on treatment, a lot of young people were not treated.  
-```
-
-
-## Statistical tests 
-
-```{r}
-Test_gender_patient <- merged_data2 %>%
-  mutate (treatment=ifelse(treatment=="Yes", 1, 0), 
-          gender=ifelse(gender=="Male", 0, 1)) %>% 
-  t.test( treatment~gender, data = .)
-  broom::tidy (Test_gender_patient)
-  Test_gender_patient
-
-# Welch Two Sample t-test gives the p-values 0.5, so the treatment does not depend on the patient.
-
-```
-
-##Read and tidy the dataset
-We stratified our data by a categorical column, 'gender' ('r (merged_data2$gender)') and report min, max, mean and sd of a numeric column, 'age'.
-    - Then we stratified the data by a categorical column (only persons with BMI <25, females, persons >50 years of age, or persons who had coughing at extubation) and reported min, max, mean and sd of a numeric column for a defined set of observations. We used age as numeric variable.
-        
-    - Use two categorical columns in your dataset to create a table (hint: ?count)
-
+We stratified our data by a categorical column, `gender` (r (merged_data2$gender)) and report min, max, mean and sd of a numeric column, `age`. Then we stratified the data by a categorical column containing only persons with BMI <25,
 ```{r}
 #  Only for persons with BMI <25
 merged_data2 %>% 
@@ -170,17 +123,26 @@ merged_data2 %>%
             min(age, na.rm = T), 
             mean(age, na.rm = T), 
             sd(age, na.rm=T))
+```
+females
+```{r}
 #Only females
 merged_data2 %>% 
   filter(gender== "Female") %>% #only women
   summarise(max(age, na.rm = T), min(age, na.rm = T), mean(age, na.rm = T), sd(age, na.rm=T))
+```
+patients older than 50 years
+```{r}
 #- Only for persons older than 50 years of age
 merged_data2 %>% 
   filter(age> 50) %>% 
   summarise(max(age, na.rm = T), 
             min(age, na.rm = T), 
             mean(age, na.rm = T), 
-            sd(age, na.rm=T)) 
+            sd(age, na.rm=T))
+```
+and persons who had coughing at extubation.
+```{r}
 #Only for persons who had experienced coughing at extubation
 merged_data2 %>% 
   filter(as.numeric(extubation_cough) >1) %>% #patient had cough 
@@ -191,18 +153,18 @@ merged_data2 %>%
 
 ```
 
-### Plots showing the distribution of age according to gender.
-The age distribution seems quite similar between genders in this study
 
+## Two categorical columns to create a table
 
 ```{r}
 Table<- merged_data2 %>%
-  count(gender, pacu30min_cough)
-Table
-
+  count(gender, smoking)
+knitr::kable(Table)
 ```
 
-## Plots
+
+
+# Plots
 
 ```{r}
 ggplot(data = merged_data2) +
@@ -244,33 +206,29 @@ plot_gender_age + boxplot_gender_age2
 
 ```
 
-## Statistical tests 
-
+# Statistical tests 
+Is the treatment dependent on the patient's gender? Before we can perform a test we have to mutate the `chr` entries in `gender` back to `num` entries using `mutate`. To answer this question we performed a *Welch's t-test* using `t.test` function and neatly display the results using `broom::tidy`. The resulting p-value > 0.5 indicates no dependency of th treatment to the patient's gender.
 ```{r}
+#Does the treatment depend on the patient's gender
 Test_gender_vs_patient <- merged_data2 %>%
   mutate (treatment=ifelse(treatment=="Yes", 1, 0), 
           gender=ifelse(gender=="Male", 0, 1)) %>% 
   t.test( treatment~gender, data = .)
   broom::tidy(Test_gender_vs_patient)
-# Welch Two Sample t-test gives the p-values 0.5, so the treatment does not depend on the patient.
 ```
 
-
+Next, we investigated whether treatment might depend on patients smoking using a *Welch's t-test*. Again, we had to change the `chr` entries in `treatment` and `smoking` back to `num` entries. The resulting p-value > 0.9 reveals no treatment difference between smokers and non-smokers. 
 ```{r}
-
-
 #Does the treatment depend on the preoperative smoking
 Test_treatment_vs_smoking <- merged_data2 %>%
-
   mutate(treatment=ifelse(treatment=="Yes", 1, 0),
          smoking=ifelse(smoking=="Never", 0, 1)) %>% 
-  t.test(treatment~smoking, data = .) %>%
+  t.test(treatment~smoking, data = .)
   broom::tidy(Test_treatment_vs_smoking)
-#The test gives a non-significant p-value, showing that there is no difference between smokers and not-smokers.
 ```
-
+Lastly, we checked if there is a dependency between treatment and preoperative pain. Here we found a strong correlation between treatment and preoperative pain.
 ```{r}
-#Does the treatment depend on the preoperative smoking
+#Does the treatment depend on the preoperative pain
 Test_treatment_vs_pain <- merged_data2 %>%
   mutate(treatment=ifelse(treatment=="Yes", 1, 0), 
          pain=ifelse(pain=="Yes", 1, 0)) %>% 
@@ -278,8 +236,7 @@ Test_treatment_vs_pain <- merged_data2 %>%
 broom::tidy(Test_treatment_vs_pain)
 ```
 
-
-##Session Info
+# Session Info
 ```{r}
 sessionInfo()
 ```
