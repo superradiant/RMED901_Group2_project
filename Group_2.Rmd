@@ -155,7 +155,6 @@ merged_data2 %>%
 
 ```
 
-
 ## Two categorical columns to create a table
 
 ```{r}
@@ -165,9 +164,7 @@ knitr::kable(Table)
 ```
 
 
-
 # Plots
-
 Plot showing correlation between throat pain and cough 30 min after treatment.
 ```{r}
 ggplot(data = merged_data2) +
@@ -192,7 +189,7 @@ Plots showing the distribution of age according to gender.
 The distribution seems quite similar between genders in this study
 
 
-```{r}
+```{r, echo = FALSE}
 plot_gender_age<-ggplot(merged_data2,
                      aes(
                        x=gender,
@@ -205,7 +202,6 @@ boxplot_gender_age2<-ggplot(merged_data2,
                           y= age)) +
 geom_boxplot(aes(col=gender))
 
-#Showing the plots side by side
 plot_gender_age + boxplot_gender_age2
 
 ```
